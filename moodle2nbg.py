@@ -1,7 +1,7 @@
 """
 +----------------------------------------------------------------------------------------------------------------------+
 moodle2nbg.py
-----------
+=============
 Converts submissions from Moodle directory & naming format to the one expected by nbgrader.
 Takes a submissions ZIP archive from moodle as input, and expects prepared nbgrader environment and released assignment
 (imported student ids, source and release subdirectories for the given assignment, functioning nbgrader database).
