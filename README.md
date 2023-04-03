@@ -21,7 +21,7 @@ the nbgrader gradebook database. The import is using create_or_update logic - so
 Typically, this needs to be executed once for the course, after student registrations have been completed. 
 However, it can be run also as an update script during the course (late registrations, changes etc.).   
 The Moodle numeric student IDs are converted to <*prefix*> + <*n-digit with leading zeros*> format
-(eg. "k00876561").
+(eg. "k00987654").
 
 Usage:
 1. Export student data from Moodle: 
@@ -35,8 +35,12 @@ and start the script:
 ## Convert submissions from Moodle to nbgrader 
 ```moodle2nbg.py```  
 Converts submissions from Moodle directory & naming format to the one expected by nbgrader.
-Takes a submissions ZIP archive from moodle as input, and expects prepared nbgrader environment.
-Assumes there is one submission file per participant and that teh student ID included in the filename (eg. kXXXXXXXX).
+Takes a submissions ZIP archive from moodle as input, and expects prepared nbgrader environment.  
+
+The script assumes a Moodle/assignment setup with:
+- identities not yet revealed in Moodle at the time of downloading the ZIP archive (Participant_XXXXXXXX folders),
+- one submission notebook per participant with the student ID included in the filename (eg. A1_k00987654.ipynb).   
+
 The script will verify the following:
 - the specified <assignment_id> should exist in the nbgrader gradebook database,
 - assignment source notebook should be under the ```source/<assignment_id>``` directory
@@ -49,17 +53,18 @@ Usage:
    - under **Grading action** select **Download all submissions**
    - create this subdirectory ```<course_dir>/moodle/<assignment_id>/``` and place the downloaded Moodle ZIP in it 
 
-2. Place the ```moodle2nbg-py``` script in the nbgrader course root directory (where typically the gradebook.db is)
-and run it with:  
+2. Place the ```moodle2nbg.py``` script in the nbgrader course root directory (where typically the gradebook.db is)
+and start it with:  
 ```python3 moodle2nbg.py <assignment_id>```  
 
 (...or alternatively, specify custom command line arguments, type -h for help)
 
 3. The script will summarise the environment/arguments and request a confirmation 
-before execution.
+prior to execution.
    
 The notebooks will be placed under the ```<course_dir>/<submitted>/<student_id>/<assignment_id>```
-directory for every submission with student ID found in the gradebook. 
+directory for every submission with a student ID found in the gradebook. 
+Unidentified notebooks will be reported as error for manual intervention. 
 The target notebook will be renamed to match the assignment notebook name in gradebook.db.
 Existing folders/notebooks will be overwritted in case they already existed.
 
