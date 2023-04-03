@@ -23,11 +23,12 @@ def process_participant_csv(args):
     print(f"...importing/updating student data into nbgrader database: {args.gradebook}")
     with open(args.moodle_csv, 'r', newline='') as in_csv, Gradebook("sqlite:///" + args.gradebook) as gb:
         reader = csv.reader(in_csv, delimiter=',', quotechar='"')
-        for i, row in tqdm(enumerate(reader), desc='students'):
+        for i, row in tqdm(enumerate(reader), desc='...created-updated students'):
             if i == 0: continue
             firstname, surname, student_id, email = row
-            student_id = f"k{int(student_id):08d}"
-            gb.update_or_create_student(student_id, first_name=firstname, last_name=surname, email=email)
+            if args.id_len:
+                student_id = f"{args.prefix}{int(student_id):0{args.id_len}d}"
+            r = gb.update_or_create_student(student_id, first_name=firstname, last_name=surname, email=email)
     print(f"...exiting... [ OK ]")
 
 
@@ -42,6 +43,10 @@ if __name__ == '__main__':
                         help='Moodle student participants CSV file (courseid_XXXXX_participants.csv)')
     parser.add_argument('-g', '--gradebook', type=str, default='gradebook.db',
                         help='gradebook database of the nbgrader environment (default: gradebook.db in current dir)')
+    parser.add_argument('-p', '--prefix', type=str, default='k',
+                        help='student ID prefix to create alphanumeric string from the Moodle ID ("" to omit)')
+    parser.add_argument('-n', '--id_len', type=int, default=8,
+                        help='student IDs will be padded to this length with leading zeros (0 omits formatting)')
     args = parser.parse_args()
 
     # check if moodle csv exists
