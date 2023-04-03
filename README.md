@@ -65,8 +65,9 @@ prior to execution.
 The notebooks will be placed under the ```<course_dir>/<submitted>/<student_id>/<assignment_id>```
 directory for every submission with a student ID found in the gradebook. 
 Unidentified notebooks will be reported as error for manual intervention. 
-The target notebook will be renamed to match the assignment notebook name in gradebook.db.
-Existing folders/notebooks will be overwritted in case they already existed.  
+The target notebooks will be renamed to match the assignment notebook name as declared in nbgrader.
+Existing folders/notebooks will be overwritted in case they already existed.
+
 The script also creates and maintains an auxiliary table **moodle_part_student** in gradebook.db
 which will contain the (assignment_id, student_id, participant_id) triplets for later use
 in creating the grading CSV to upload back to Moodle.
