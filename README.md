@@ -70,5 +70,5 @@ Existing folders/notebooks will be overwritted in case they already existed.
 
 The script also creates and maintains an auxiliary table **moodle_part_student** in gradebook.db
 which will contain the (assignment_id, student_id, participant_id) triplets for later use
-in creating the grading CSV to upload back to Moodle.
+in creating the grading CSV to upload back to Moodle (only required if identities are not revealed in Moodle).
 
