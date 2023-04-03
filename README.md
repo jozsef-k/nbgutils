@@ -34,7 +34,7 @@ and start the script:
  
 ## Convert submissions from Moodle to nbgrader 
 ```moodle2nbg.py```  
-Converts submissions from Moodle directory & naming format to the one expected by nbgrader.
+Converts submissions from Moodle directory and naming format to the one expected by nbgrader.
 Takes a submissions ZIP archive from moodle as input, and expects prepared nbgrader environment.  
 
 The script assumes a Moodle/assignment setup with:
