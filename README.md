@@ -5,15 +5,15 @@ Utility scripts and tools for using nbgrader with moodle assignments.
 ## Environment
 The scripts require an initialised nbgrader course directory with the usual
 subdirectory structure and a gradebook database:
-
-nbg_course_dir  
+```
+<nbg_course_dir>  
 +-- source  
 +-- release  
 +-- submitted  
 +-- autograded   
 +-- feedback  
 +-- gradebook.db
- 
+```
 ## Initialisation - import student information
 ```mstudent_import.py```  
 As a preparation step to using nbgrader with Moodle this utility imports student information exported from Moodle into
