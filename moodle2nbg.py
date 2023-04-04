@@ -12,7 +12,7 @@ Usage:
 - download and place the moodle ZIP into a subdirectory: <course_dir>/moodle/<assignment_id>/<...>.zip
 - start the script with:    python3 moodle2nbg.py <assignment_id>
 
-(...or alternatively, specify custom command line arguments, type -h for help)
+(...or alternatively, specify custom command line arguments, use -h for help)
 
 Author: Jozsef KOVACS
 Created: 31/03/2023
