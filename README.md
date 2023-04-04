@@ -89,7 +89,7 @@ The prepared files are then uploaded to [Stanford's MOSS software similarity che
 The assignment skeleton file is also taken into account as a base file by MOSS, as the pre-contained code blocks 
 are legitimately reused and should be ignored.
 
-The script will output the .py code versions and the MOSS report URL at the end of execution. 
+The script will output the .py code versions and the MOSS report URL at the end of execution.  
 It optionally downloads the report and the belonging difference files to the local filesystem.
 
 The submissions are retrieved from: ```<course_dir>/submitted/<student_id>/<assignment_id>/<assignment>.ipynb``` 
