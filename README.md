@@ -42,7 +42,7 @@ The script assumes a Moodle/assignment setup with:
 - one submission notebook per participant with the student ID included in the filename (eg. A1_k00987654.ipynb).   
 
 The script will verify the following:
-- the specified <assignment_id> should exist in the nbgrader gradebook database,
+- the specified <assignment_id> should exist in the nbgrader gradebook database (e.g. A1, A2 ...),
 - assignment source notebook should be under the ```source/<assignment_id>``` directory
 - the released version of the notebook should be under ```release/<assignment_id>```,
 - the Moodle notebook filenames should contain a student IDs that exists in the nbgrader gradebook.
@@ -66,7 +66,7 @@ The notebooks will be placed under the ```<course_dir>/<submitted>/<student_id>/
 directory for every submission with a student ID found in the gradebook. 
 Unidentified notebooks will be reported as error for manual intervention. 
 The target notebooks will be renamed to match the assignment notebook name as declared in nbgrader.
-Existing folders/notebooks will be overwritted in case they already existed.
+Existing folders/notebooks will be overwritten in case they already existed.
 
 The script also creates and maintains an auxiliary table **moodle_part_student** in gradebook.db
 which will contain the (assignment_id, student_id, participant_id) triplets for later use
@@ -75,40 +75,44 @@ in creating the grading CSV to upload back to Moodle (only required if identitie
 ## Plagiarism checking with MOSS  
 ```nb2py4moss.py```  
 ### Requirements
-This script requires a MOSS user ID (http://theory.stanford.edu/~aiken/moss/) and the mosspy python module 
-(https://github.com/soachishti/moss.py) installed in the environment.     
+This script requires a [registered MOSS user ID](http://theory.stanford.edu/~aiken/moss/) and the 
+[mosspy](https://github.com/soachishti/moss.py) python module installed in the environment.     
 ### Description
 In order to effectively check student submissions for plagiarism, this script harvests the source code cells content
 of the Jupyter notebooks submitted by students and creates a .py version of the submission. The script is intended for
 use in the nbgrader environment. Cells that are "locked" in nbgrader are not harvested, which helps with narrowing the
 focus on the content created by the students. The script also pre-processes the assignment skeleton in a similar way.  
 
-The prepared files are then uploaded to Stanford's MOSS software similarity checker, which generates an HTML report.
-The assignment skeleton file is also taken into account as a base file by MOSS - those code blocks should be ignored.
+The prepared files are then uploaded to [Stanford's MOSS software similarity checker](http://theory.stanford.edu/~aiken/moss/), which generates an HTML report.
+The assignment skeleton file is also taken into account as a base file by MOSS, as the pre-contained code blocks 
+are legitimately reused and should be ignored.
 
 The script will output the .py code versions and the MOSS report URL at the end of execution. 
 It optionally downloads the report and the belonging difference files to the local filesystem.
 
-The input notebooks are searched for in ```<course_dir>/submitted/<student_id>/<assignment_id>/<assignment>.ipynb```.
+The submissions are retrieved from: ```<course_dir>/submitted/<student_id>/<assignment_id>/<assignment>.ipynb``` 
+for all students who submitted a notebook for the specified assignment.  
+
 The skeleton notebook is taken from ```<course_dir>/release/<assignment_id>/<assignment>.ipynb```.
 
 The pre-processed submission files are saved as
-```<course_dir>/moss/<student_id>/<assignment_id>/<assignment_py>```
+```<course_dir>/moss/<student_id>/<assignment_id>/<assignment>.py```
 
 The pre-processed skeleton file is saved as
-```<course_dir>/moss/basefile/<assignment_id>/<assignment_py>```
+```<course_dir>/moss/basefile/<assignment_id>/<assignment>.py```
 
-The report can be opened online with the URL provided at the end of execution. If the reports are downloaded locally, 
-they will be saved in this folder with index.html as the default page:
-```<course_dir>/moss/reports/<assignment_id>/...```
+The report can be opened online with the URL provided at the end of execution. If the option to download the
+reports locally has been selected, they are going to be saved under this folder:
+```<course_dir>/moss/reports/<assignment_id>/...``` with index.html as the default page
 
 ### Usage
 1. Place the ```nb2py4moss.py``` script in the nbgrader course root directory and start it with:  
 ```python3 nb2py4moss.py <assignment_id> <moss_user_id>```  
 
-2. Use the --download switch if you wish to download the report locally. 
+2. Use the --download switch if you wish to download the report to your local filesystem. The online reports are
+typically deleted after 14 days.
 
-Remark: option -i <I> will allow for setting the preferred ignore limit for repetitions (nr. of occurence of a repeating pattern before 
-it is ignored - ie. after this limit the repeating pattern should be considered legitimate sharing). The default is 3.
+Remark: *option -i <I> will allow for setting the preferred ignore limit for repetitions (nr. of occurence of a repeating pattern before 
+it is ignored - ie. after this limit the repeating pattern should be considered legitimate sharing). The default is set to 3.*
 
  
