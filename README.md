@@ -15,13 +15,13 @@ subdirectory structure and a gradebook database:
 +-- gradebook.db
 ```
 ## Initialisation - import student information
-```mstudent_import.py```  
+```mstudent_import.py```
 As a preparation step to using nbgrader with Moodle this utility imports student information exported from Moodle into
 the nbgrader gradebook database. The import is using create_or_update logic - so existing students are updated.
 Typically, this needs to be executed once for the course, after student registrations have been completed. 
 However, it can be run also as an update script during the course (late registrations, changes etc.).   
 The Moodle numeric student IDs are converted to <*prefix*> + <*n-digit with leading zeros*> format
-(eg. "k00987654").
+(eg. "k00987654"), optionally.
 
 Usage:
 1. Export student data from Moodle: 
@@ -34,18 +34,20 @@ and start the script:
  
 ## Convert submissions from Moodle to nbgrader 
 ```moodle2nbg.py```  
-Converts submissions from Moodle directory and naming format to the one expected by nbgrader.
-Takes a submissions ZIP archive from moodle as input, and expects prepared nbgrader environment.  
+Converts submissions from the Moodle directory and naming format to the one expected by nbgrader.
+Takes a submissions ZIP archive downloaded from moodle as input and expects a prepared nbgrader environment 
+(the assignment has been registered, the source notebook created and released).  
 
-The script assumes a Moodle/assignment setup with:
+The script assumes a Moodle assignment setup with:
 - identities not yet revealed in Moodle at the time of downloading the ZIP archive (Participant_XXXXXXXX folders),
 - one submission notebook per participant with the student ID included in the filename (eg. A1_k00987654.ipynb).   
 
 The script will verify the following:
-- the specified <assignment_id> should exist in the nbgrader gradebook database (e.g. A1, A2 ...),
+- the specified <*assignment_id*> should exist in the nbgrader gradebook database (e.g. A1, A2 ...),
 - assignment source notebook should be under the ```source/<assignment_id>``` directory
 - the released version of the notebook should be under ```release/<assignment_id>```,
-- the Moodle notebook filenames should contain a student IDs that exists in the nbgrader gradebook.
+- the Moodle notebook filenames should contain student IDs that exist in the nbgrader gradebook
+ (see [Initialisation - import student information](#initialisation---import-student-information)).
 
 Usage:
 1. Export the submissions from Moodle:
