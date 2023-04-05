@@ -80,8 +80,8 @@ in creating the grading CSV to upload back to Moodle (only required if identitie
 This script requires a [registered MOSS user ID](http://theory.stanford.edu/~aiken/moss/) and the 
 [mosspy](https://github.com/soachishti/moss.py) python module installed in the environment.     
 ### Description
-In order to effectively check student submissions for plagiarism, this script harvests the source code cells content
-of the Jupyter notebooks submitted by students and creates a .py version of the submission. The script is intended for
+In order to effectively check student submissions for plagiarism, this script harvests the source code cells
+of the Jupyter notebooks submitted by students and creates a reduced .py version of the content. The script is intended for
 use in the nbgrader environment. Cells that are "locked" in nbgrader are not harvested, which helps with narrowing the
 focus on the content created by the students. The script also pre-processes the assignment skeleton in a similar way.  
 
@@ -114,7 +114,23 @@ reports locally has been selected, they are going to be saved under this folder:
 2. Use the --download switch if you wish to download the report to your local filesystem. The online reports are
 typically deleted after 14 days.
 
-Remark: *option -i <I> will allow for setting the preferred ignore limit for repetitions (nr. of occurence of a repeating pattern before 
-it is ignored - ie. after this limit the repeating pattern should be considered legitimate sharing). The default is set to 3.*
+Remark: *option -i <N> will allow for setting the preferred ignore limit for repetitions (nr. of occurence of a repeating pattern before 
+it is ignored - ie. after this limit the repeating pattern should be considered legitimate sharing). The default is set to 3.*  
 
- 
+# Export grades and upload to Moodle   
+```grades2moodle.py```
+
+This script exports the grades and feedback for a given assignment from nbgrader to a Moodle grading worksheet.
+This grading approach assumes that participant identities were not revealed, and the nbgrader gradebook.db
+contains an auxiliary participant_id-student_id lookup table, which should have been created by moodle2nbg.py
+when the submissions were converted to nbgrader format. The result is written back to the Moodle grading worksheet
+and will only contain rows for submitted assignments, which were also processed in nbgrader.
+
+### Usage
+1. Place this script in the nbgrader course root directory (where typically the gradebook.db is).
+2. Download the Moodle grading worksheet for the given assignment (e.g. into <course_dir>/moodle/grading/<...>.csv)
+3. Start the script with:
+```python3 grades2moodle.py <assignment_id> <moodle_grading_worksheet>```
+
+Check the worksheet before uploading back to Moodle.
+
