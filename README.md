@@ -1,5 +1,9 @@
 # nbgutils  
-Utility scripts and tools for using nbgrader with moodle assignments.
+Utility scripts and tools to support autograding of [moodle](https://moodle.com/) assignments with [nbgrader](https://nbgrader.readthedocs.io/en/stable/):
+- importing moodle student information to nbgrader
+- converting moodle submission archive to nbgrader directory and naming structure
+- plagiarism checking on submitted Jupyter notebooks with MOSS
+- exporting grades for uploading back to moodle.
 
 ---
 ## Environment
@@ -117,7 +121,7 @@ typically deleted after 14 days.
 Remark: *option -i <N> will allow for setting the preferred ignore limit for repetitions (nr. of occurence of a repeating pattern before 
 it is ignored - ie. after this limit the repeating pattern should be considered legitimate sharing). The default is set to 3.*  
 
-# Export grades and upload to Moodle   
+## Export grades and upload to Moodle   
 ```grades2moodle.py```
 
 This script exports the grades and feedback for a given assignment from nbgrader to a Moodle grading worksheet.
