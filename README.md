@@ -19,7 +19,7 @@ subdirectory structure and a gradebook database:
 +-- gradebook.db
 ```
 ## Initialisation - import student information
-```mstudent_import.py```
+```mstudent_import.py```  
 As a preparation step to using nbgrader with Moodle this utility imports student information exported from Moodle into
 the nbgrader gradebook database. The import is using create_or_update logic - so existing students are updated.
 Typically, this needs to be executed once for the course, after student registrations have been completed. 
