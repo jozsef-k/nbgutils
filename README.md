@@ -1,5 +1,5 @@
 # nbgutils  
-Utility scripts and tools to support autograding of [moodle](https://moodle.com/) assignments with [nbgrader](https://nbgrader.readthedocs.io/en/stable/):
+Utility scripts and tools to support autograding of [moodle](https://moodle.org/) assignments with [nbgrader](https://nbgrader.readthedocs.io/en/stable/):
 - importing moodle student information to nbgrader
 - converting moodle submission archive to nbgrader directory and naming structure
 - plagiarism checking on submitted Jupyter notebooks with MOSS
