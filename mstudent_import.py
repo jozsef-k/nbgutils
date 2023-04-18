@@ -21,7 +21,7 @@ from tqdm import tqdm
 def process_participant_csv(args):
     """ process moodle student csv, import data to gradebook """
     print(f"...importing/updating student data into nbgrader database: {args.gradebook}")
-    with open(args.moodle_csv, 'r', newline='') as in_csv, Gradebook("sqlite:///" + args.gradebook) as gb:
+    with open(args.moodle_csv, 'r', newline='', encoding='utf8') as in_csv, Gradebook("sqlite:///" + args.gradebook) as gb:
         reader = csv.reader(in_csv, delimiter=',', quotechar='"')
         for i, row in tqdm(enumerate(reader), desc='...created-updated students'):
             if i == 0: continue
