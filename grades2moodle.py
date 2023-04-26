@@ -27,9 +27,12 @@ from nbgrader.api import SubmittedAssignment, Gradebook
 PARTICIPANT_STUDENT_QUERY = """
     select mps.student_id, mps.participant_id
       from moodle_part_student mps
-     where mps.assignment_id = ?
-     limit 3 
+     where mps.assignment_id = ? 
     """
+
+# pattern indicating feedback in html file
+HTML_SEARCH_PATTERN = r'AssertionError</span>: ex'
+hsp = HTML_SEARCH_PATTERN
 
 
 class ParticipantGrade():
@@ -76,22 +79,33 @@ def retrieve_participant_grades(args):
     return grade_dict
 
 
-def retrieve_participant_feedback(grade_dict):
+def retrieve_participant_feedback(grade_dict, feedback_dir, assignment_id):
     """ updates the ParticipantGrade object with the automated feedback retrieved from nbgrader files  """
 
     # iterate through ParticipantGrade objects and set feedback
     print(f"...retrieving feedback for participant grades")
     for _, part_grade in grade_dict.items():
-        part_grade.feedback = ""
 
-        # TODO: get all feedback for submission, concatenate and set feedback attribute
-        # ..... feedback could be retrieved from feedback HTML or cells of notebooks in "autograded"
-        # ..... the resulting string will be written into a CSV field (format/concatenation)
-        # ..... part_grade.feedback = ....
-
-        # TODO: optionally - if submission reached max_points, start feedback with "well done :)"
-        # ..... if part_grade.score ==  part_grade.max_score
-        # ..... and similar
+        student_id = part_grade.student_id
+        html_filepath = feedback_dir / student_id / assignment_id
+        
+        try:
+            html_filepath = next(html_filepath.glob('*.html'))
+        except:
+            print(f'ERROR: no html feedback file found for student {student_id} and assignment {assignment_id}')
+            continue
+        
+        # optionally - if submission reached max_points, start feedback with "well done :)"
+        if part_grade.score == part_grade.max_score:
+            part_grade.feedback = 'well done :)\n'
+            
+        # extract all assertion error messages -> feedback for assignment
+        # assumes fixed mode of autograde testing plus no additonal assertion errors created by students
+        with open(html_filepath, 'r', encoding='utf-8') as html:
+            for line in html:
+                if hsp in line:
+                    feedback_msg = line[line.find(hsp)+len(hsp)-2:-7] + '\n'
+                    part_grade.feedback += feedback_msg     
 
 
 def export_grades_csv(args):
@@ -104,9 +118,10 @@ def export_grades_csv(args):
     print(f"...retrieving participant grades from {args.gradebook}")
     grade_dict = retrieve_participant_grades(args)
 
-    # retrieve participant feedback from autograded or feedback HTML files
-    # TODO: update participant feedback --> call retrieve_participant_feedback
-    retrieve_participant_feedback(grade_dict)
+    # retrieve participant feedback from feedback HTML files
+    feedback_dir = Path(args.course_dir) / 'feedback'
+    assignment_id = args.assignment_id
+    retrieve_participant_feedback(grade_dict, feedback_dir, assignment_id)
 
     # process the Moodle grading worksheet
     result_rows = list()
