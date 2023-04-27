@@ -40,7 +40,7 @@ do
   consmsg "# grade.sh - processing submission ${cnt} of ${total}"
   consmsg "#------------------------------------------------------"
   consmsg "started grading assignment ${ASSIGNMENT} for student: ${STUDENT}"
-  #${NBG_BIN}/nbgrader autograde ${ASSIGNMENT} --student ${STUDENT}
+  ${NBG_BIN}/nbgrader autograde ${ASSIGNMENT} --student ${STUDENT}
   consmsg "finished grading assignment ${ASSIGNMENT} for student: ${STUDENT}"
   ${NVIDIA_SMI}
 done
