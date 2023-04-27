@@ -140,7 +140,7 @@ Check the worksheet before uploading back to Moodle.
 
 ## Fantastic issues with nbgrader and where to find them
 
-### 1. Warning outputs in test cells result in 0 points
+### 1. Warnings in test cells result in 0 points
 Test cells are automatically graded 0 points if there are any warning messages in the output after execution, 
 even if there were no AssertionError or any other errors, and the solution, in fact, passed the test.
 When students are using deprecated functions, methods, arguments, or the implementation of a used module warns
