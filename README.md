@@ -3,7 +3,7 @@ Utility scripts and tools to support autograding of [moodle](https://moodle.org/
 - importing moodle student information to nbgrader
 - converting moodle submission archive to nbgrader directory and naming structure
 - checking the submitted Jupyter notebooks for plagiarism with MOSS
-- exporting grades for uploading back to moodle.
+- exporting grades for uploading back to moodle. 
 
 ---
 ## Environment
