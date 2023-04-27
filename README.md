@@ -138,3 +138,56 @@ and will only contain rows for submitted assignments, which were also processed 
 
 Check the worksheet before uploading back to Moodle.
 
+## Fantastic issues with nbgrader and where to find them
+
+### 1. Warning outputs in test cells result in 0 points
+Test cells are automatically graded 0 points if there are any warning messages in the output after execution, 
+even if there were no AssertionError or any other errors, and the solution, in fact, passed the test.
+When students are using deprecated functions, methods, arguments, or the implementation of a used module warns
+about some other detail, the cell output will contain one or more "UserWarning" or other "...Warning" messages.
+
+One solution could be to turn of warnings, but it might have undesired side effects:
+```
+import warnings
+warnings.filterwarnings('ignore')
+```
+
+The other way would be to manually correct the awarded points. The submissions with these issues can be found 
+by file content search of the autograded notebooks. 
+For example:
+```grep "Warning" autograded/*/A2/assignment2.ipynb```
+will list all occurances.  
+
+### 2. KeyboardInterrupt - timeout of test cell execution awards 0 points
+During automatic grading nbgrader uses KeyboardInterrupt when cell execution reaches the timeout settings.
+This is typically desired, because we don't want long cell executions - e.g. training, data preprocessing...
+However, it may happen to test cells as well - due to poor implementation, some unusual choices made by students etc.
+Particularly, if the ```c.ExecutePreprocessor.timeout``` is set to a low value in ```nbgrader_config.py```.
+If this happens in a test cell, 0 points will be awarded. Furthermore, if this happens in a test cell that subsequent
+test cells depend upon, it will create a series of failing tests, while the solution might be correct, albeit slow.
+
+After automatic grading we should check for KeyboardInterrupt errors specifically in the test cells. For example:
+```grep "KeyboardInterrupt*" autograded/*/A2/assignment2.ipynb | grep "ename"```
+will only return those occurences, which happened in the test cells. These should be verified manually. 
+
+### 3. CUDA out of memory error in bulk execution
+When using ```nbgrader autograde``` to bulk process the submissions, in some cases CUDA out of memory errors are raised. 
+It appears to be related to failed, interrupted or irregularly ended notebook executions in the automated sequence,
+such that the allocated GPU memory is not entirely freed up. Using the ```grade_all.sh``` bash script seems to
+solve the issue, but it's recommended to monitor GPU memory during the process, and also to try file content search 
+after automatic grading for "RuntimeError", "cuda", "out of memory".
+
+### 4. Feedback generation with nbgrader doesn't work with '\n', '\t'... in assertion messages
+Using '\n' or '\t' etc. characters in assertion messages should be avoided, because when nbgrader generates the feedback HTML files 
+from the autograded notebooks, it doesn't propagate the whole message if such a character is encountered, and the
+message is cut up in a pretty awkward way.
+
+### 5. Check for unexpected error messages in test cells
+If everything works as it is supposed to, we should have only AssertionError messages "exN: ....." in the test cell outputs.
+It is worth filtering for other error messages, to find potential issues with test cases or problematic notebooks.
+For example:
+```grep "ename" autograded/*/A2/assignment2.ipynb```
+or
+```grep "evalue" autograded/*/A2/assignment2.ipynb```
+Getting lines with "ename", should mostly return "AssertionError", and grep "evalue" should return "exN ..." 
+messages. There might be other things that fail by design, but those are easily filtered out. 
