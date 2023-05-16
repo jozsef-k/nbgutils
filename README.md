@@ -42,16 +42,21 @@ Converts submissions from the Moodle directory and naming format to the one expe
 Takes a submissions ZIP archive downloaded from moodle as input and expects a prepared nbgrader environment 
 (the assignment has been registered, the source notebook created and released).  
 
-The script assumes a Moodle assignment setup with:
-- identities not yet revealed in Moodle at the time of downloading the ZIP archive (Participant_XXXXXXXX folders),
-- one submission notebook per participant with the student ID included in the filename (eg. A1_k00987654.ipynb).   
+The script assumes a Moodle assignment setup with one submission notebook per participant.  
+
+Both moodle grading modes are supported: **blind grading** and **revealed identities**.
+If the assignment in moodle is configured for blind grading and the identities have not yet been revealed at the
+time of downloading the submission ZIP archive (Participant_XXXXXXXX folders), then:  
+- the student ID must be included in the notebook filename: <assignment_name>_<student_id>.ipynb (eg. A1_k00987654.ipynb),
+- the ```--blind``` command line switch should be used.
 
 The script will verify the following:
 - the specified <*assignment_id*> should exist in the nbgrader gradebook database (e.g. A1, A2 ...),
 - assignment source notebook should be under the ```source/<assignment_id>``` directory
 - the released version of the notebook should be under ```release/<assignment_id>```,
-- the Moodle notebook filenames should contain student IDs that exist in the nbgrader gradebook
- (see [Initialisation - import student information](#initialisation---import-student-information)).
+- the nbgrader gradebook database contains the students who submitted the notebooks (see [Initialisation - import student information](#initialisation---import-student-information)).:
+  - for blind mode: the submitted notebook filenames should contain student IDs that exist in the nbgrader gradebook,
+  - for revealed identities: the student names from moodle must exist in the initialised nbgrader gradebook.
 
 Usage:
 1. Export the submissions from Moodle:
@@ -76,7 +81,7 @@ Existing folders/notebooks will be overwritten in case they already existed.
 
 The script also creates and maintains an auxiliary table **moodle_part_student** in gradebook.db
 which will contain the (assignment_id, student_id, participant_id) triplets for later use
-in creating the grading CSV to upload back to Moodle (only required if identities are not revealed in Moodle).
+in creating the grading CSV to upload back to Moodle.
 
 ## Plagiarism checking with MOSS  
 ```nb2py4moss.py```  
@@ -124,11 +129,13 @@ it is ignored - ie. after this limit the repeating pattern should be considered 
 ## Export grades and upload to Moodle   
 ```grades2moodle.py```
 
-This script exports the grades and feedback for a given assignment from nbgrader to a Moodle grading worksheet.
-This grading approach assumes that participant identities were not revealed, and the nbgrader gradebook.db
-contains an auxiliary participant_id-student_id lookup table, which should have been created by moodle2nbg.py
-when the submissions were converted to nbgrader format. The result is written back to the Moodle grading worksheet
-and will only contain rows for submitted assignments, which were also processed in nbgrader.
+This script exports the grades and feedback for a given assignment from nbgrader to a Moodle grading worksheet.  
+Both moodle grading modes are supported: **blind grading** and **revealed identities**.  
+This script assumes that mstudent_import.py was used to import the student information and the moodle2nbg.py was 
+used to process the moodle submission ZIP, that is the nbgrader gradebook.db contains an auxiliary 
+participant_id-student_id lookup table.  
+The grades/feedback are written back to the Moodle grading worksheet and will only contain rows for submitted 
+assignments, which were also processed in nbgrader.
 
 ### Usage
 1. Place this script in the nbgrader course root directory (where typically the gradebook.db is).
