@@ -6,6 +6,7 @@ Converts submissions from Moodle directory & naming format to the one expected b
 Takes a submissions ZIP archive from moodle as input, and expects prepared nbgrader environment and released assignment
 (imported student ids, source and release subdirectories for the given assignment, functioning nbgrader database).
 Assumes there is one submission file per participant/student and the student ID included in the filename (kXXXXXXXX).
+Supports both revealed identities and blind grading. For bling grading the --blind switch should be used.
 
 Usage:
 - place this script in the nbgrader course root directory (where typically the gradebook.db is),

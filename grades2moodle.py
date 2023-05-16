@@ -3,8 +3,9 @@
 grades2moodle.py
 ================
 This script exports the grades and feedback for a given assignment from nbgrader to a Moodle grading worksheet.
-This grading approach assumes that participant identities were not revealed, and the nbgrader gradebook.db
-contains an auxiliary participant_id-student_id lookup table, which should have been created by moodle2nbg.py
+Supports both revealed identities and blind grading. For bling grading the --blind switch should be used.
+This script assumes that the submissions were prepared for nbgrader using the moodle2nbg.py tool, which created
+an auxiliary participant_id-student_id lookup table in the gradebook.db of the nbgrader environment
 when the submissions were converted to nbgrader format. The result is written back to the Moodle grading worksheet
 and will only contain rows for submitted assignments, which were also processed in nbgrader.
 
@@ -12,6 +13,7 @@ Usage:
 - place this script in the nbgrader course root directory (where typically the gradebook.db is),
 - download the moodle grading worksheet for the given assignment (e.g. into <course_dir>/moodle/grading/<...>.csv)
 - start the script with:    python3 grades2moodle.py <assignment_id> <moodle_grading_worksheet>
+- for grading worksheet in "blind grading" mode use the --blind command line switch
 
 +----------------------------------------------------------------------------------------------------------------------+
 """
