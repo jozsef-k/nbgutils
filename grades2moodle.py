@@ -104,7 +104,7 @@ def retrieve_participant_feedback(grade_dict, feedback_dir, assignment_id):
         with open(html_filepath, 'r', encoding='utf-8') as html:
             for line in html:
                 if hsp in line:
-                    feedback_msg = line[line.find(hsp)+len(hsp)-2:-7] + '\n'
+                    feedback_msg = line[line.find(hsp)+len(hsp)-2:-7] + '<br> \n'
                     part_grade.feedback += feedback_msg     
 
 
@@ -136,8 +136,8 @@ def export_grades_csv(args):
             # if participant is in nbgrader grade dictionary
             participant_id = row[0].split(' ')[-1]
             if participant_id in grade_dict:
-                row[5] = grade_dict[participant_id].score
-                row[10] = grade_dict[participant_id].feedback
+                row[args.column_offset + 5] = grade_dict[participant_id].score
+                row[args.column_offset + 10] = grade_dict[participant_id].feedback
                 result_rows.append(row)
 
     if not result_rows:
@@ -168,6 +168,8 @@ if __name__ == '__main__':
                         help='path to the nbgrader course directory (default: the current working directory)')
     parser.add_argument('-g', '--gradebook', type=str, default='gradebook.db',
                         help='gradebook database of the nbgrader environment (default: gradebook.db in current dir)')
+    parser.add_argument('--blind', action='store_true',
+                        help='moodle worksheet uses Participant ids, student identities are not revealed')
     args = parser.parse_args()
 
     # check if gradebook exists
@@ -177,5 +179,8 @@ if __name__ == '__main__':
     # check if moodle worksheet exists
     if not Path(args.moodle_worksheet).is_file():
         raise FileNotFoundError(f"ERROR: The specified Moodle grading worksheet ({args.moodle_worksheet}) not found! ")
+
+    # if grading isn't "blind", there are 3 additional columns (2-4) in the grading worksheet: name, ID, email
+    args.column_offset = 0 if args.blind else 3
 
     export_grades_csv(args)

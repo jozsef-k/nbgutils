@@ -27,6 +27,7 @@ import nbgrader.api
 import click
 
 PARTICIPANT_REGEX = 'Participant_([0-9]+)_'
+REVEALED_REGEX = '(.+?)_([0-9]+)_assignsubmission_file_'
 STUDENT_PREFIX = "k"
 STUDENT_REGEX = "_" + STUDENT_PREFIX + "([0-9]+)"
 
@@ -34,32 +35,67 @@ STUDENT_REGEX = "_" + STUDENT_PREFIX + "([0-9]+)"
 def process_moodle_archive(args):
     """ processes Moodle ZIP and extracts submission to nbgrader format, updates participant/student id mapping"""
     with ZipFile(args.moodle_zip) as zipped, sqlite3.connect(args.gradebook) as db_conn,\
-        Gradebook("sqlite:///" + args.gradebook) as gb:
+            Gradebook("sqlite:///" + args.gradebook) as gb:
+
         prepare_db(db_conn, args.assignment_id)
 
+        if not args.blind:
+            st_by_names = {(st.first_name + ' ' + st.last_name): st for st in gb.students}
+
         processed = 0
+        processed_students = set()
         for info in zipped.infolist():
             # skip entries not matching submission ext.
             if not info.filename.endswith(args.extension):
                 continue
 
             print(f"...processing submission: {info.filename}")
-            # retrieve participant ID from directory name
-            participant_id = re.search(PARTICIPANT_REGEX, info.filename).group(1)
 
-            # retrieve student ID from submitted file name
-            match = re.search(STUDENT_REGEX, info.filename.lower())
-            if not match:
-                print("ERROR: Submission file naming incorrect: " + info.filename)
-                continue
-            student_id = f"k{int(str(match.group(1))):08d}"
+            if args.blind:
+                # retrieve participant ID from directory name
+                participant_id = re.search(PARTICIPANT_REGEX, info.filename).group(1)
 
-            # check if student is registered in gradebook (validate inferred student ID)
-            try:
-                gb.find_student(student_id)
-            except nbgrader.api.MissingEntry:
-                print("ERROR: Cannot process file, student ID not found in Gradebook: " + info.filename)
-                continue
+                # retrieve student ID from submitted file name
+                match = re.search(STUDENT_REGEX, info.filename.lower())
+                if not match:
+                    print("ERROR: Submission file naming incorrect: " + info.filename)
+                    continue
+                student_id = f"k{int(str(match.group(1))):08d}"
+
+                # check if the ID is unique
+                if student_id in processed_students:
+                    print("ERROR: This student ID is not unique, it has already been processed: " + info.filename)
+                    continue
+
+                # check if student is registered in gradebook (validate inferred student ID)
+                try:
+                    gb.find_student(student_id)
+                except nbgrader.api.MissingEntry:
+                    print("ERROR: Cannot process file, student ID not found in Gradebook: " + info.filename)
+                    continue
+
+                processed_students.add(student_id)
+
+            # revealed identities
+            else:
+                # retrieve participant ID from directory name
+                match = re.search(REVEALED_REGEX, info.filename)
+                student_name = match.group(1)
+                participant_id = match.group(2)
+
+                # check if the name is unique
+                if student_name in processed_students:
+                    print("ERROR: This student name is not unique, it has already been processed: " + info.filename)
+                    continue
+
+                # check if student is registered in gradebook (validate by name)
+                student = st_by_names[student_name]
+                if student is None:
+                    print("ERROR: Cannot process file, student name not found in Gradebook: " + info.filename)
+                    continue
+
+                processed_students.add(student_name)
+                student_id = student.id
 
             # create new directory under submitted and extract submission file under expected name
             out_path = Path(args.subdir, student_id, args.assignment_id)
@@ -178,6 +214,7 @@ if __name__ == '__main__':
                         help='path and filename of the gradebook database (default: gradebook.db in current dir)')
     parser.add_argument('-x', '--extension', type=str, default='.ipynb',
                         help='the expected extension of the submitted file (default: Jupyter notebook - ".ipynb"')
+    parser.add_argument('--blind', action='store_true', help='moodle blind grading: Participant_XXXXXXXX folders are expected')
 
     args = parser.parse_args()
 
