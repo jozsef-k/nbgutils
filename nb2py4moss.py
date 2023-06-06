@@ -75,8 +75,8 @@ def process_submissions(args):
     mp.addBaseFile(str(basefile_out))
 
     # prepare student notebooks for MOSS (saves .py versions under moss directory)
-    submitted_path = course_path / "submitted"
-    for path in submitted_path.rglob('*.ipynb'):
+    submitted_path = course_path / "submitted" 
+    for path in submitted_path.rglob(f'**/{args.assignment_id}/*.ipynb'):
         output_path = course_path / "moss" / Path("/".join(path.parts[1:3]))
         output_path.mkdir(parents=True, exist_ok=True)
         output = output_path / f"{path.parts[-1].split('.')[0]}.py"
