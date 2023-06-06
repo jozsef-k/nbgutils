@@ -138,8 +138,8 @@ def export_grades_csv(args):
             # if participant is in nbgrader grade dictionary
             participant_id = row[0].split(' ')[-1]
             if participant_id in grade_dict:
-                row[args.column_offset + 5] = grade_dict[participant_id].score
-                row[args.column_offset + 10] = grade_dict[participant_id].feedback
+                row[args.column_offset + 2] = grade_dict[participant_id].score
+                row[args.column_offset + 7] = grade_dict[participant_id].feedback
                 result_rows.append(row)
 
     if not result_rows:
