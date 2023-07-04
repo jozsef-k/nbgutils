@@ -202,3 +202,6 @@ or
 ```grep "evalue" autograded/*/A2/assignment2.ipynb```  
 Getting lines with "ename", should mostly return "AssertionError", and grep "evalue" should return "exN ..." 
 messages. There might be other things that fail by design, but those are easily filtered out. 
+
+### 6. Failed autograding with message "[AutogradeApp | ERROR] One or more notebooks in the assignment use an old version ..."
+This error will stop bulk autograding and usually results from duplicated nbgrader cells. Look for earlier warnings of the type "[AutogradeApp | WARNING] Cell with id 'cell-98d0f1ee74179d96' exists multiple times!", which should point to the problematic cells. Easiest way to resolve this is to delete all nbgrader metadata from all but one of the duplicated cells and run the autograding again. Check https://github.com/jupyter/nbgrader/issues/1083
